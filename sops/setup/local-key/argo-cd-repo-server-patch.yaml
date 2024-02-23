@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  namespace: argocd
+spec:
+  template:
+    spec:
+      dnsPolicy: ClusterFirst
+      volumes:
+        - name: custom-tools
+          emptyDir: {}
+        - name: sops-age
+          secret:
+            secretName: sops-age  # must contain key named `keys.txt`
+
+      initContainers:
+        - name: install-ksops
+          image: viaductoss/ksops:v4
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Installing KSOPS and Kustomize...";
+              cp /usr/local/bin/ksops /custom-tools/ksops;
+              cp /usr/local/bin/kustomize /custom-tools/kustomize;
+              chmod +x /custom-tools/ksops /custom-tools/kustomize;
+              echo "Done.";
+          volumeMounts:
+            - name: custom-tools
+              mountPath: /custom-tools
+
+      containers:
+        - name: repo-server
+          env:
+            - name: XDG_CONFIG_HOME
+              value: /.config
+            - name: SOPS_AGE_KEY_FILE
+              value: /.config/sops/age/keys.txt
+            - name: KUSTOMIZE_PLUGIN_HOME
+              value: /.config/kustomize/plugin
+            - name: KUSTOMIZE_PLUGIN_LOADERS
+              value: exec
+          volumeMounts:
+            - name: custom-tools
+              mountPath: /usr/local/bin/kustomize
+              subPath: kustomize
+            - name: custom-tools
+              mountPath: /.config/kustomize/plugin/viaduct.ai/v1/ksops/ksops
+              subPath: ksops
+            - name: sops-age
+              mountPath: /.config/sops/age/keys.txt
+              subPath: keys.txt
