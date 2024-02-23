@@ -1,5 +1,5 @@
 resources:
-- ../../base
+- ../../../app-manifests/base
 - namespace.yaml
 
 
@@ -17,7 +17,12 @@ labels:
     env: prod
 
 patches:
-  - path: patch.yaml
+  - path: patches/replica_count.yaml
+    target:
+      kind: Deployment
+      name: app-deployment
+  
+  - path: patches/rolling_update.yaml
     target:
       kind: Deployment
       name: app-deployment

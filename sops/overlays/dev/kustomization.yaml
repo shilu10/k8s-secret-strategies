@@ -1,5 +1,5 @@
 resources:
-- ../../base
+- ../../../app-manifests/base
 - namespace.yaml
 
 # transformers 
@@ -12,7 +12,12 @@ labels:
 
 # patches 
 patches:
-  - path: patch.yaml
+  - path: patches/replica_count.yaml
+    target:
+      kind: Deployment
+      name: app-deployment
+
+  - path: patches/rolling_update.yaml
     target:
       kind: Deployment
       name: app-deployment
@@ -27,6 +32,6 @@ configMapGenerator:
 
 # custom(plugin) generator
 generators:
-  - secret-generator.yaml
+  - generators/secret-generator.yaml
 
 

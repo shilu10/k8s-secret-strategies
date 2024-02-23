@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: app-deployment
 spec:
-  replicas: 10
   strategy:
     type: RollingUpdate
     rollingUpdate:
