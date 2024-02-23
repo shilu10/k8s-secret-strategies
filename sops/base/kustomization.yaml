@@ -1,0 +1,10 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: app
+

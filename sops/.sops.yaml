@@ -1,0 +1,5 @@
+creation_rules:
+  - kms: arn:aws:kms:us-east-1:000000000000:key/a6b424ae-9098-4875-a522-e09726a009c3
+    encrypted_regex: '^(data|stringData)$'
+    path_regex: '.*\.enc\.yaml$'
+

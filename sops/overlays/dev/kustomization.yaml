@@ -1,0 +1,32 @@
+resources:
+- ../../base
+- namespace.yaml
+
+# transformers 
+namespace: dev
+
+labels:
+- includeSelectors: true
+  pairs:
+    env: dev
+
+# patches 
+patches:
+  - path: patch.yaml
+    target:
+      kind: Deployment
+      name: app-deployment
+
+# generators 
+# built-in generator
+configMapGenerator:
+- literals:
+  - ENV=dev
+  - FEATURE_FLAG=true
+  name: app-config
+
+# custom(plugin) generator
+generators:
+  - secret-generator.yaml
+
+

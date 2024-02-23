@@ -1,0 +1,26 @@
+resources:
+- ../../base
+- namespace.yaml
+
+
+configMapGenerator:
+- literals:
+  - ENV=prod
+  - FEATURE_FLAG=true
+  name: app-config
+
+namespace: prod
+
+labels:
+- includeSelectors: true
+  pairs:
+    env: prod
+
+patches:
+  - path: patch.yaml
+    target:
+      kind: Deployment
+      name: app-deployment
+
+generators:
+  - secret-generator.yaml
