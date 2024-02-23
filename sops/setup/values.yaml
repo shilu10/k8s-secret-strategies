@@ -1,0 +1,29 @@
+# Enable Kustomize Alpha Plugins via Argo CD ConfigMap, required for ksops
+configs:
+  cm:
+    kustomize.buildOptions: "--enable-alpha-plugins --enable-exec"
+
+repoServer:
+
+
+
+  volumes:
+    - name: ksops-plugin
+      emptyDir: {}
+
+  initContainers:
+    - name: install-ksops
+      image: viaductoss/ksops:v4
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          mkdir -p /custom-tools/viaduct.ai/v1/ksops;
+          cp /usr/local/bin/ksops /custom-tools/viaduct.ai/v1/ksops/ksops;
+      volumeMounts:
+        - mountPath: /custom-tools
+          name: ksops-plugin
+
+  volumeMounts:
+    - name: ksops-plugin
+      mountPath: /home/argocd/.config/kustomize/plugin
+
