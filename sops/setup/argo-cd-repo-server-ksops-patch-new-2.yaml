@@ -6,9 +6,17 @@ metadata:
 spec:
   template:
     spec:
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+        searches:
+          - github.com
+
       volumes:
         - name: ksops-plugin
           emptyDir: {}
+
       initContainers:
         - name: install-ksops
           image: viaductoss/ksops:v4.3.1
@@ -23,6 +31,7 @@ spec:
           volumeMounts:
             - name: ksops-plugin
               mountPath: /custom-tools
+
       containers:
         - name: repo-server
           volumeMounts:
@@ -36,8 +45,8 @@ spec:
             - name: AWS_ACCESS_KEY_ID
               value: test
             - name: AWS_SECRET_ACCESS_KEY
-              value: test 
+              value: test
             - name: AWS_REGION
-              value: us-east-1  # ✅ Change if you're using a different region
+              value: us-east-1
             - name: AWS_ENDPOINT_URL
               value: http://172.18.223.171:4566
