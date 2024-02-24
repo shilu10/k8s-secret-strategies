@@ -1,0 +1,18 @@
+environments:
+  dev:
+    values:
+      - environments/dev.yaml
+
+repositories:
+  - name: external-secrets
+    url: https://charts.external-secrets.io
+
+--- 
+releases:
+  - name: external-secrets
+    namespace: kube-system
+    chart: external-secrets/external-secrets
+    version: 0.18.1
+    values:
+      - values/{{ .Environment.Name }}-values.yaml
+    createNamespace: true
