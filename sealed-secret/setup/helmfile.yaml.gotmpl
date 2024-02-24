@@ -10,7 +10,7 @@ repositories:
 --- 
 releases:
   - name: sealed-secrets
-    namespace: {{ .Environment.Name }}
+    namespace: kube-system
     chart: sealed-secrets/sealed-secrets
     version: 2.13.3
     values:
