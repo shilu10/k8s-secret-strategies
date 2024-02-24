@@ -1,7 +1,7 @@
 resources:
   - ../../../app-manifests/base
   - namespace.yaml
-  - sealedsecret.yaml 
+  - sealed-secret.yaml 
 
 # transformers 
 namespace: dev
