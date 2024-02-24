@@ -1,0 +1,18 @@
+environments:
+  dev:
+    values:
+      - environments/dev.yaml
+      
+repositories:
+  - name: sealed-secrets
+    url: https://bitnami-labs.github.io/sealed-secrets
+
+--- 
+releases:
+  - name: sealed-secrets
+    namespace: {{ .Environment.Name }}
+    chart: sealed-secrets/sealed-secrets
+    version: 2.13.3
+    values:
+      - values/{{ .Environment.Name }}-values.yaml
+    createNamespace: true

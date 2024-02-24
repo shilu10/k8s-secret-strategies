@@ -1,0 +1,22 @@
+resources:
+  - ../../../app-manifests/base
+  - namespace.yaml
+  - sealedsecret.yaml 
+
+# transformers 
+namespace: dev
+
+labels:
+  - includeSelectors: true
+    pairs:
+      env: dev
+
+# generators 
+# built-in generator
+configMapGenerator:
+- literals:
+  - ENV=dev
+  - FEATURE_FLAG=true
+  name: app-config
+
+

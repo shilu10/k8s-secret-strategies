@@ -1,0 +1,4 @@
+environment: dev
+global:
+  team: devops
+  cluster: local-cluster
