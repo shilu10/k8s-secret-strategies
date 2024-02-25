@@ -1,4 +1,5 @@
 resources:
+  - ../../../app-manifests/base
   - namespace.yaml
   - secret-store.yaml
   - external-secret.yaml
