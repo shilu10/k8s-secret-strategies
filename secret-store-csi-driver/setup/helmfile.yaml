@@ -1,0 +1,18 @@
+environments:
+  dev:
+    values:
+      - environments/dev.yaml
+
+repositories:
+  - name: secrets-store-csi-driver
+    url: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
+
+--- 
+releases:
+  - name: secret-store-csi-driver 
+    chart: secrets-store-csi-driver/secrets-store-csi-driver
+    namespace: kube-system 
+    version: 1.5.1 
+    values:
+      - values/{{ .Environment.Name }}-values.yaml
+    createNamespace: true

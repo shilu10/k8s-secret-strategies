@@ -1,0 +1,11 @@
+syncSecret:
+  enabled: true
+  enableSecretRotation: true
+  rotationPollInterval: 1m
+
+enableSecretRotation: true
+
+nodePublishSecret:
+  enabled: true
+
+replicaCount: 1
