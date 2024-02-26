@@ -1,0 +1,18 @@
+environments:
+  dev:
+    values:
+      - environments/dev.yaml
+
+repositories:
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+
+---
+releases:
+  - name: argocd
+    namespace: argocd
+    chart: argo/argo-cd
+    version: 8.1.2
+    values:
+      - values/{{ .Environment.Name }}-values.yaml 
+    createNamespace: true

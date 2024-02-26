@@ -13,7 +13,7 @@ repositories:
 --- 
 releases:
   - name: external-secrets
-    namespace: kube-system
+    namespace: external-secrets
     chart: external-secrets/external-secrets
     version: 0.18.1
     values:
@@ -21,7 +21,7 @@ releases:
     createNamespace: true
 
   - name: vault 
-    namespace: kube-system 
+    namespace: vault
     chart: hashicorp/vault
     version: 0.30.0
     values:

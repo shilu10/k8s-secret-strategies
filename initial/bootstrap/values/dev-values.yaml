@@ -1,0 +1,78 @@
+global:
+  logging:
+    level: info
+  image:
+    tag: latest  # Use stable if desired
+
+server:
+  image:
+    repository: argocd-custom-server
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 50m
+      memory: 128Mi
+  service:
+    type: NodePort
+    nodePortHttp: 30080
+    nodePortHttps: 30443
+  ingress:
+    enabled: false
+  extraArgs:
+    - --insecure  # Local use only, disables TLS
+  config:
+    admin.enabled: true
+
+controller:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 50m
+      memory: 128Mi
+
+repoServer:
+  image:
+    repository: argocd-custom-server
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 50m
+      memory: 128Mi
+
+applicationSet:
+  enabled: false
+
+redis:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 25m
+      memory: 64Mi
+
+dex:
+  enabled: false
+
+notifications:
+  enabled: false
+
+configs:
+  cm:
+    kustomize.buildOptions: "--enable-alpha-plugins"
+  rbac:
+    policy.default: role:admin

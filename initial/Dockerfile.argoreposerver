@@ -1,0 +1,12 @@
+FROM quay.io/argoproj/argocd:latest
+
+USER root
+
+RUN apt-get update && apt-get install -y curl tar && \
+    curl -L https://github.com/helmfile/helmfile/releases/download/v1.1.2/helmfile_1.1.2_linux_amd64.tar.gz -o /tmp/helmfile.tar.gz && \
+    tar -xzf /tmp/helmfile.tar.gz -C /tmp && \
+    mv /tmp/helmfile /usr/local/bin/helmfile && \
+    chmod +x /usr/local/bin/helmfile && \
+    rm -rf /var/lib/apt/lists/* /tmp/*
+
+USER 999
