@@ -5,6 +5,16 @@ server:
   enabled: true
   logLevel: "debug"
 
+ui:
+  enabled: true
+  serviceType: ClusterIP
+
+injector:
+  enabled: false
+
+csi:
+  enable: false
+
   ha:
     enabled: false
     raft:
@@ -58,13 +68,6 @@ server:
   volumes:
     - name: data
       emptyDir: {}
-
-ui:
-  enabled: true
-  serviceType: ClusterIP
-
-injector:
-  enabled: false
 
 serviceAccount:
   create: true
