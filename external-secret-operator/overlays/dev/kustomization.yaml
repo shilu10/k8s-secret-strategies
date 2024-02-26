@@ -1,8 +1,12 @@
 resources:
   - ../../../app-manifests/base
   - namespace.yaml
-  - secret-store.yaml
-  - external-secret.yaml
+  # - token-auth-secret-store.yaml          enable these for token based auth for eso
+  # - token-auth-external-secret.yaml 
+  # - vault-secret.yaml 
+  - k8s-auth-external-secret.yaml
+  - k8s-auth-secret-store.yaml
+  - sa.yaml 
 
 namespace: dev 
 

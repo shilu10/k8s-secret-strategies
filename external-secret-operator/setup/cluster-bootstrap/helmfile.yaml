@@ -6,6 +6,9 @@ environments:
 repositories:
   - name: external-secrets
     url: https://charts.external-secrets.io
+  
+  - name: vault 
+    url: https://helm.releases.hashicorp.com
 
 --- 
 releases:
@@ -14,5 +17,13 @@ releases:
     chart: external-secrets/external-secrets
     version: 0.18.1
     values:
-      - values/{{ .Environment.Name }}-values.yaml
+      - values/external-secrets/{{ .Environment.Name }}-values.yaml
+    createNamespace: true
+
+  - name: vault 
+    namespace: kube-system 
+    chart: hashicorp/vault
+    version: 0.30.0
+    values:
+      - values/vault/{{ .Environment.Name }}-values.yaml
     createNamespace: true
