@@ -12,11 +12,11 @@ server:
   replicas: 1
   resources:
     requests:
-      cpu: 25m
-      memory: 64Mi
-    limits:
-      cpu: 50m
+      cpu: 75m
       memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 200Mi
   service:
     type: NodePort
     nodePortHttp: 30080
@@ -32,11 +32,11 @@ controller:
   replicas: 1
   resources:
     requests:
-      cpu: 25m
-      memory: 64Mi
-    limits:
       cpu: 50m
-      memory: 128Mi
+      memory: 96Mi
+    limits:
+      cpu: 100m
+      memory: 200Mi
 
 repoServer:
   image:
@@ -46,11 +46,11 @@ repoServer:
   replicas: 1
   resources:
     requests:
-      cpu: 25m
-      memory: 64Mi
-    limits:
       cpu: 50m
-      memory: 128Mi
+      memory: 96Mi
+    limits:
+      cpu: 100m
+      memory: 200Mi
 
 applicationSet:
   enabled: false
@@ -59,11 +59,11 @@ redis:
   enabled: true
   resources:
     requests:
-      cpu: 10m
-      memory: 32Mi
-    limits:
-      cpu: 25m
+      cpu: 30m
       memory: 64Mi
+    limits:
+      cpu: 60m
+      memory: 128Mi
 
 dex:
   enabled: false
