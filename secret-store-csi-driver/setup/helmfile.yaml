@@ -7,12 +7,24 @@ repositories:
   - name: secrets-store-csi-driver
     url: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
 
+  - name: hashicorp
+    url: https://helm.releases.hashicorp.com
+
 --- 
 releases:
   - name: secret-store-csi-driver 
     chart: secrets-store-csi-driver/secrets-store-csi-driver
-    namespace: kube-system 
+    namespace: secret-store  
     version: 1.5.1 
     values:
-      - values/{{ .Environment.Name }}-values.yaml
+      - values/secret-store/{{ .Environment.Name }}-values.yaml
     createNamespace: true
+
+  - name: vault
+    chart: hashicorp/vault 
+    namespace: vault 
+    version: 0.30.0
+    values:
+      - values/vault/{{ .Environment.Name }}-values.yaml
+    createNamespace: true
+

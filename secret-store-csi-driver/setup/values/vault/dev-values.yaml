@@ -1,0 +1,73 @@
+global:
+  tlsDisable: true
+
+csi:
+  enabled: true 
+
+ui:
+  enabled: true
+  serviceType: ClusterIP
+
+injector:
+  enabled: false
+
+server:
+  enabled: true
+  logLevel: "debug"
+
+  ha:
+    enabled: false
+    raft:
+      enabled: true
+      config: |
+        ui = true
+        listener "tcp" {
+          address = "0.0.0.0:8200"
+          cluster_address = "0.0.0.0:8201"
+          tls_disable = 1
+        }
+        storage "raft" {
+          path = "/vault/data"
+          node_id = "vault-local"
+        }
+        disable_mlock = true
+
+  dataStorage:
+    enabled: false  # Disable PVC
+
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+      cpu: 100m
+
+  readinessProbe:
+    enabled: false
+  livenessProbe:
+    enabled: false
+
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 8200
+
+  extraInitContainers:
+    - name: mkdir-vault-data
+      image: busybox
+      command: ["sh", "-c", "mkdir -p /vault/data"]
+      volumeMounts:
+        - name: data
+          mountPath: /vault/data
+
+  volumeMounts:
+    - name: data
+      mountPath: /vault/data
+
+  volumes:
+    - name: data
+      emptyDir: {}
+
+serviceAccount:
+  create: true
