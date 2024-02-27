@@ -15,7 +15,7 @@ releases:
   - name: external-secrets
     namespace: external-secrets
     chart: external-secrets/external-secrets
-    version: 0.18.1
+    version: 0.12.1
     values:
       - values/external-secrets/{{ .Environment.Name }}-values.yaml
     createNamespace: true
@@ -23,7 +23,7 @@ releases:
   - name: vault 
     namespace: vault
     chart: hashicorp/vault
-    version: 0.30.0
+    version: 0.24.0
     values:
       - values/vault/{{ .Environment.Name }}-values.yaml
     createNamespace: true
