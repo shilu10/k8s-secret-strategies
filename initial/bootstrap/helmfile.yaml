@@ -12,7 +12,7 @@ releases:
   - name: argocd
     namespace: argocd
     chart: argo/argo-cd
-    version: 8.1.2
+    version: 5.52.0
     values:
       - values/{{ .Environment.Name }}-values.yaml 
     createNamespace: true

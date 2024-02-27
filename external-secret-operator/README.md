@@ -71,13 +71,7 @@ external-secret-operator/
 
 ## 🛠️ Prerequisites
 
-- Kubernetes Cluster
-- [Helm](https://helm.sh/)
-- [Helmfile](https://github.com/helmfile/helmfile)
-- [SOPS](https://github.com/mozilla/sops)
-- [Age](https://github.com/FiloSottile/age) or GPG for encryption
-- [Vault CLI](https://developer.hashicorp.com/vault/docs/install)
-- [ArgoCD](https://argo-cd.readthedocs.io/)
+### - go to initial/ and install it.
 
 ---
 
