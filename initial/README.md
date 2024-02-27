@@ -37,7 +37,7 @@ This repository bootstraps a secure and extensible **ArgoCD GitOps setup** with:
 - [Age](https://github.com/FiloSottile/age) or GPG for encryption
 - [Vault CLI](https://developer.hashicorp.com/vault/docs/install)
 - [ArgoCD](https://argo-cd.readthedocs.io/)
-
+- [kubeseal](https://github.com/bitnami-labs/sealed-secrets?tab=readme-ov-file#installation-from-source)
 ---
 
 ## 🚀 Installation Steps
