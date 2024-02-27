@@ -6,7 +6,7 @@ This repository automates the integration of **External Secrets Operator (ESO)**
 
 ## 📁 Directory Structure
 
-```
+```bash
 external-secret-operator/
 ├── README.md
 ├── overlays/

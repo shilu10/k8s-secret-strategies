@@ -15,7 +15,7 @@ releases:
   - name: secret-store-csi-driver 
     chart: secrets-store-csi-driver/secrets-store-csi-driver
     namespace: secret-store  
-    version: 1.5.1 
+    version: 1.4.1 
     values:
       - values/secret-store/{{ .Environment.Name }}-values.yaml
     createNamespace: true
@@ -23,7 +23,7 @@ releases:
   - name: vault
     chart: hashicorp/vault 
     namespace: vault 
-    version: 0.30.0
+    version: 0.27.0
     values:
       - values/vault/{{ .Environment.Name }}-values.yaml
     createNamespace: true

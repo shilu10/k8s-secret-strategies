@@ -5,7 +5,7 @@ This directory contains Kubernetes manifests to deploy a simple **NGINX** web se
 ---
 
 ## 📁 Structure
-```
+```bash
 app-manifest/
 ├── deployment.yaml
 ├── service.yaml
