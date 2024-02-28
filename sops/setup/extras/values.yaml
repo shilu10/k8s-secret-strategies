@@ -5,8 +5,6 @@ configs:
 
 repoServer:
 
-
-
   volumes:
     - name: ksops-plugin
       emptyDir: {}
