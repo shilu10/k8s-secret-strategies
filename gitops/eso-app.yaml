@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-secret-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: REPO_URL
+    targetRevision: main
+    path: external-secret-operator/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ""
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

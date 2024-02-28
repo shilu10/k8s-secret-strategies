@@ -1,191 +1,140 @@
-# 🔐 GitOps with ArgoCD + ksops (age encryption) on KubeAdm
+# 🔐 Kubernetes Secret Management (GitOps-Ready)
 
-This project demonstrates secure secret management in Git using **SOPS** with **age encryption**, integrated into **Kustomize overlays**, and deployed via ArgoCD GitOps Operator on kubeadm cluster.
+This monorepo provides a **comprehensive GitOps-based solution** for managing Kubernetes secrets using:
 
----
+- ✅ **Sealed Secrets**
+- ✅ **External Secrets Operator (ESO)** + Vault
+- ✅ **Secrets Store CSI Driver** + Vault
+- ✅ **SOPS with KSOPS Plugin** (via Age or KMS)
 
-## 🗄️ Project Structure
-
-```
-.
-├── base
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   └── kustomization.yaml
-├── overlays
-│   ├── dev
-│   │   ├── secret.dev.enc.yaml
-│   │   ├── secret-generator.yaml
-│   │   ├── namespace.yaml
-│   │   ├── patch.yaml
-│   │   └── kustomization.yaml
-│   └── prod
-│       ├── secret.prod.enc.yaml
-│       ├── secret-generator.yaml
-│       ├── namespace.yaml
-│       ├── patch.yaml
-│       └── kustomization.yaml
-└── setup
-    ├── local-key
-    │   ├── create-secret.sh
-    │   ├── argo-cd-cm-patch.yaml
-    │   └── argo-cd-repo-server-patch.yaml
-    └── Kubernetes manifest configurations
-```
+All modules are ArgoCD-compatible and environment-aware (`dev`, `prod`), with secure secret lifecycle practices.
 
 ---
 
-## 🔧 Prerequisites
+## 🚀 Tools Used
 
-- Kubeadm or Kind cluster with GitOps Operator / ArgoCD installed
-- Tools:
-  - `sops` (v3.0+)
-  - `age` (`age-keygen`)
-  - `kubectl`
-  - `kustomize`
-  - `ksops` plugin enabled in ArgoCD
+| Tool | Purpose |
+|------|---------|
+| [ArgoCD](https://argo-cd.readthedocs.io/) | GitOps controller for syncing manifests |
+| [Helmfile](https://github.com/helmfile/helmfile) | Declarative Helm chart deployments |
+| [SOPS](https://github.com/mozilla/sops) | Securely encrypt secrets in Git |
+| [KSOPS](https://github.com/viaduct-ai/kustomize-sops) | Kustomize + SOPS integration |
+| [Bitnami Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) | Encrypt secrets as CRDs |
+| [ESO (External Secrets Operator)](https://external-secrets.io/) | Sync Vault secrets to Kubernetes |
+| [Secrets Store CSI Driver](https://secrets-store-csi-driver.sigs.k8s.io/) | Mount secrets directly into pods |
+| [Vault](https://www.vaultproject.io/) | Backend secret storage and access control |
+| [Vault Cli](https://www.vaultproject.io/) | Vault CLI |
+---
+
+## 📁 Directory Overview
+```
+kubernetes-secret-management/
+├── app-manifests/ # Sample app manifests (Nginx)
+├── external-secret-operator/ # Vault + ESO integration (K8s & Token auth)
+├── sealed-secret/ # Sealed Secrets controller + sample SealedSecret
+├── secret-store-csi-driver/ # CSI driver + Vault provider + pod-mounted secrets
+├── sops/ # KSOPS integration using SOPS with Age/KMS
+├── gitops/ # ArgoCD Applications for syncing each module
+├── initial/ # ArgoCD bootstrap + custom repo-server image
+└── README.md # This file
+```
 
 ---
 
-## 1. 🛠️ Setup Age Key
-Install the [Age tool](https://github.com/FiloSottile/age#installation) and run the below command to generate a new key:
+## 🔐 Modules Explained
 
-```bash
-age-keygen -o ~/.config/sops/age/keys.txt
-```
+### 1️⃣ `app-manifests/`
 
-Copy the **public key** from `keys.txt` (look for the `public key:` line).
+- A simple sample app (Nginx) with `Deployment` and `Service`
+- Used for testing secret injection (env or mounted)
 
 ---
-## 2. Create a Secret 
-Create a secret in the namespace where your ArgoCD-instance is running:
-```bash
-cat age.agekey | kubectl create secret generic sops-age --namespace=argocd \
---from-file=keys.txt=/dev/stdin
-```
 
-## 3. 🛡️ Configure SOPS
+### 2️⃣ `external-secret-operator/`
 
-Create or edit `sops/.sops.yaml`:
+- Installs ESO + Vault using Helmfile
+- Supports both:
+  - 🔐 Kubernetes Auth-based login to Vault
+  - 🧾 Token Auth (Vault token sealed via SOPS)
+- Includes ArgoCD syncable overlays
+
+🗝️ Secrets are pulled into Kubernetes `Secret` resources from Vault KV backend.
+
+---
+
+### 3️⃣ `sealed-secret/`
+
+- Installs Bitnami Sealed Secrets controller
+- Converts encrypted SealedSecret CRDs into usable K8s Secrets
+- Encrypted secrets are safe to store in Git
+
+🔐 Secrets are **sealed via `kubeseal`** and decrypted only by the controller.
+
+---
+
+### 4️⃣ `secret-store-csi-driver/`
+
+- Installs CSI driver + Vault provider via Helmfile
+- Configures `SecretProviderClass` to mount Vault secrets into pods as volumes
+- Avoids storing secrets in K8s altogether
+
+🚫 No K8s Secret objects are created — secrets are ephemeral and mounted only.
+
+---
+
+### 5️⃣ `sops/`
+
+- GitOps-friendly SOPS secret management
+- Two options:
+  - 🔐 `setup/age-key/` → Encrypt with Age key
+  - 🛡️ `setup/kms/` → Encrypt with cloud KMS (AWS, GCP, Azure)
+- Uses `ksops` plugin with ArgoCD
+- Secrets decrypted at runtime using `.enc.yaml` and `secret-generator.yaml`
+
+💡 Update `.sops.yaml` and ensure Age private key or KMS role access is properly configured.
+
+---
+
+### 6️⃣ `initial/`
+
+- Bootstraps ArgoCD using Helmfile
+- Patches ArgoCD to:
+  - Support KSOPS plugin
+  - Mount Age key / inject KMS config
+- Includes `Dockerfile.argoreposerver` for custom image (with `sops`, `ksops`, `kustomize`, etc.)
+
+🚀 Must be run before syncing any other modules if KSOPS or sealed secrets are used.
+
+---
+
+### 7️⃣ `gitops/`
+
+Contains ArgoCD `Application` manifests for each module:
 
 ```yaml
-creation_rules:
-  - encrypted_regex: '^(data|stringData)$'
-    age: age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+- eso-app.yaml
+- sealedsecret-app.yaml
+- secret-store-csi-app.yaml
+- sops-app.yaml
 ```
 
-Replace `age1...` with your actual age public key.
 
----
+### 🔄 gitops/ – ArgoCD Application Manifests
+This directory contains ArgoCD Application YAMLs, one for each module in this repository.
 
-## 4. 🔐 Encrypt Secret Overlays
+Each ArgoCD Application points to a specific folder (e.g., external-secret-operator/, sealed-secret/, etc.) and enables GitOps-style deployment.
 
-Define a plaintext secret (e.g., `sops/overlays/dev/secret.dev.enc.yaml`):
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: app-secret
-  namespace: dev
-type: Opaque
-stringData:
-  DB_USER: "devuser"
-  DB_PASS: "devpass"
-```
-
-Encrypt it:
+💡 Users must manually apply these Application manifests in their own cluster.
 
 ```bash
-cd sops/
-sops -e -i overlays/dev/secret.dev.enc.yaml
+kubectl apply -f gitops/
+Available Applications:
+ArgoCD App Manifest	Module Targeted
+eso-app.yaml	external-secret-operator/
+sealedsecret-app.yaml	sealed-secret/
+secret-store-csi-app.yaml	secret-store-csi-driver/
+sops-app.yaml	sops/
 ```
 
-Repeat for `prod` overlay.
+🔁 ArgoCD will continuously sync these modules from Git after the apps are created.
 
----
-
-## 5. 🔓 Decrypt Locally (for testing)
-
-```bash
-cd sops/
-sops -d overlays/dev/secret.dev.enc.yaml
-```
-
-If you encounter errors locating keys:
-
-```bash
-export SOPS_AGE_KEY="$(cat ~/.config/sops/age/keys.txt)"
-```
-
----
-
-## 6. ⚙️ Enable ksops in ArgoCD on Kubeadm or Kind Cluster
-
-1. **Local age secret(private key)**:  
-   Create a Kubernetes secret in the ArgoCD namespace (usually `argocd`):
-
-   ```bash
-   cat ~/.config/sops/age/keys.txt | kubectl create secret generic sops-age --namespace=argocd --from-file=keys.txt=/dev/stdin
-   ```
-   look into setup/age-key/create-secret.sh for reference.
-
-2. **Patch ArgoCD ConfigMap**:
-
-   ```bash
-   kubectl patch configmap argocd-cm -n argocd --patch-file \
-     setup/age-key/argo-cd-cm-patch.yaml
-   ```
-
-3. **Patch ArgoCD repo-server deployment**:
-
-   ```bash
-   kubectl patch deployment argocd-repo-server \
-     -n argocd --patch-file setup/age-key/argo-cd-repo-server-patch.yaml
-   ```
-
-4. **Restart deployments**:
-
-   ```bash
-   kubectl rollout restart configmap/argocd-cm -n argocd
-   kubectl rollout restart deployment/argocd-repo-server -n argocd
-   kubectl rollout restart deployment/argocd-application-controller -n \ argocd
-   ```
-
----
-
-## 7. 🔁 Create ArgoCD Applications
-
-Use GitOps Operator CRDs (e.g., `Application` ) to target:
-
-- repo: your Git repository
-- path: `sops/overlays/dev` or `sops/overlays/prod`
-- namespace: `dev` / `prod`
-- sync policy: manual or automated
-
-ksops will decrypt secrets during rendering.
-
----
-
-## 8. ✅ Validate
-
-- ArgoCD UI (OCP Console or Grafana) shows successful sync.
-- Secrets appear decrypted in your Dev/Prod namespaces.
-
----
-
-## 9. 🔐 Rotation / Clean-up
-
-- To revoke access, remove the `sops-age` secret or rotate your age key.
-- Use `sops -r` to rekey existing encrypted files if needed.
-
----
-
-## 10. 🎉 Benefits
-
-- 👁️ No plaintext secrets in Git
-- 🔄 Environment-specific overlays
-- 🔐 Secure decryption using ArgoCD-sideage
-- 🧠 Easy to replicate for OKD/OCP and vanilla Kubernetes
-
----
